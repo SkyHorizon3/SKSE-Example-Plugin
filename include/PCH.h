@@ -7,8 +7,8 @@
 #include <chrono>
 #include <memory>
 #include <Windows.h>
-#include <cstdint>
 #include <filesystem>
+#include <string>
 
 
 using namespace std::literals;
@@ -19,4 +19,5 @@ using namespace std::literals;
 #define DEBUG_LOG(logger, msg, ...)
 #endif
 
+#include <spdlog/sinks/basic_file_sink.h>
 #include "Plugin.h"
