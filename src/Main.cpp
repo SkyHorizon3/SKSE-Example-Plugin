@@ -1,8 +1,6 @@
 ﻿#include "../include/Main.h"
 #include "../include/Globals.h"
 
-namespace logger = SKSE::log;
-
 // Setup logger for plugin
 void Main::SetupLog()
 {
