@@ -1,9 +1,11 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-  "name": "example",
+  "name": "dynamicstringreplacer",
   "version-string": "1.0.0",
   "dependencies": [
     "commonlibsse-ng",
-    "simpleini"
+    "simpleini",
+    "nlohmann-json",
+    "xbyak"
   ]
 }

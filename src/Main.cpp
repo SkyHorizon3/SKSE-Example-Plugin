@@ -1,8 +1,10 @@
-﻿#include "../include/Main.h"
-#include "../include/Globals.h"
+﻿#include "../include/Globals.h"
+#include "../include/Config.h"
+#include "../include/Hooks.h"
+#include "../include/Processor.h"
 
 // Setup logger for plugin
-void Main::SetupLog()
+void SetupLog()
 {
 	auto logsFolder = SKSE::log::log_directory();
 	if (!logsFolder)
@@ -25,10 +27,24 @@ void MessageListener(SKSE::MessagingInterface::Message* message)
 	switch (message->type)
 	{
 		// https://github.com/ianpatt/skse64/blob/09f520a2433747f33ae7d7c15b1164ca198932c3/skse64/PluginAPI.h#L193-L212
+	case SKSE::MessagingInterface::kPostPostLoad:
+	{
+		if (!GetModuleHandle(L"po3_Tweaks"))
+		{
+			g_Logger->error("po3_Tweaks not found, mod won't work!");
+		}
+
+	}
+	break;
 	case SKSE::MessagingInterface::kDataLoaded:
 	{
+		Config::GetSingleton()->EnumerateFolder();
+		Config::GetSingleton()->LoadFiles();
+		Processor::GetSingleton()->RunConstTranslation();
 
-
+		Hook::JournalMenu::InstallUIHook();
+		//Hook::HudMenu::InstallUIHook();
+		Hook::InstallHooks();
 	}
 	break;
 
@@ -39,22 +55,14 @@ void MessageListener(SKSE::MessagingInterface::Message* message)
 	}
 }
 
-void Main::Setup()
-{
-	SetupLog();
-
-	SKSE::GetMessagingInterface()->RegisterListener(MessageListener);
-
-	//Load();
-	g_Logger->info("{} v{} loaded", Plugin::NAME, Plugin::VERSION);
-
-}
-
 SKSEPluginLoad(const SKSE::LoadInterface* skse)
 {
 	SKSE::Init(skse);
-	Main plugin;
-	plugin.Setup();
+
+	SetupLog();
+
+	SKSE::GetMessagingInterface()->RegisterListener(MessageListener);
+	g_Logger->info("{} v{} loaded", Plugin::NAME, Plugin::VERSION);
 
 	return true;
 }
