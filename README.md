@@ -14,5 +14,6 @@
 
 
 Commands:
-1. git submodule update --init --recursive
-2. git submodule update --remote
+1. git submodule add Path.git extern/Foldername
+2. git submodule update --init --recursive
+3. git submodule update --remote
