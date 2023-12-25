@@ -1,8 +1,7 @@
-﻿#include "../include/Main.h"
-#include "../include/Globals.h"
+﻿#include "../include/Globals.h"
 
 // Setup logger for plugin
-void Main::SetupLog()
+void SetupLog()
 {
 	auto logsFolder = SKSE::log::log_directory();
 	if (!logsFolder)
@@ -39,22 +38,14 @@ void MessageListener(SKSE::MessagingInterface::Message* message)
 	}
 }
 
-void Main::Setup()
-{
-	SetupLog();
-
-	SKSE::GetMessagingInterface()->RegisterListener(MessageListener);
-
-	//Load();
-	g_Logger->info("{} v{} loaded", Plugin::NAME, Plugin::VERSION);
-
-}
-
 SKSEPluginLoad(const SKSE::LoadInterface* skse)
 {
 	SKSE::Init(skse);
-	Main plugin;
-	plugin.Setup();
+
+	SetupLog();
+
+	SKSE::GetMessagingInterface()->RegisterListener(MessageListener);
+	g_Logger->info("{} v{} loaded", Plugin::NAME, Plugin::VERSION);
 
 	return true;
 }
