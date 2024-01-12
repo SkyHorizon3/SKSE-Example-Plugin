@@ -1,13 +1,14 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "example",
-  "version-string": "1.0.0",
+  "version-semver": "1.0.0",
+  "description": "",
+  "license": "GPL-3.0",
   "dependencies": [
     "simpleini",
-    "fmt",
     "spdlog",
     "directxtk",
     "catch2",
     "rapidcsv"
-  ]
+  ],
+  "builtin-baseline": "53bef8994c541b6561884a8395ea35715ece75db"
 }
