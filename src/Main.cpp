@@ -1,5 +1,4 @@
 ﻿
-// Setup logger for plugin
 void SetupLog()
 {
 	auto logsFolder = SKSE::log::log_directory();
@@ -13,16 +12,13 @@ void SetupLog()
 	auto fileLoggerPtr = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilePath.string(), true);
 	auto loggerPtr = std::make_shared<spdlog::logger>("log", std::move(fileLoggerPtr));
 
-	//if (Config::EnableDebugLog)
-	//{
+#ifndef NDEBUG
 	loggerPtr->set_level(spdlog::level::trace);
 	loggerPtr->flush_on(spdlog::level::trace);
-	//}
-	//else
-	//{
-		//loggerPtr->set_level(spdlog::level::info);
-		//loggerPtr->flush_on(spdlog::level::info);
-	//}
+#else
+	loggerPtr->set_level(spdlog::level::info);
+	loggerPtr->flush_on(spdlog::level::info);
+#endif
 
 	spdlog::set_default_logger(std::move(loggerPtr));
 }
