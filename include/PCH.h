@@ -6,7 +6,6 @@
 using namespace std::literals;
 
 #include <xbyak/xbyak.h>
-#include <spdlog/sinks/basic_file_sink.h>
 #include "Plugin.h"
 
 
@@ -18,8 +17,6 @@ namespace stl
 	void write_thunk_call(std::uintptr_t a_src)
 	{
 		auto& trampoline = SKSE::GetTrampoline();
-		SKSE::AllocTrampoline(14);
-
 		T::func = trampoline.write_call<5>(a_src, T::thunk);
 	}
 

@@ -1,30 +1,11 @@
 ﻿
-void MessageListener(SKSE::MessagingInterface::Message* message)
-{
-	switch (message->type)
-	{
-		// https://github.com/ianpatt/skse64/blob/09f520a2433747f33ae7d7c15b1164ca198932c3/skse64/PluginAPI.h#L193-L212
-	case SKSE::MessagingInterface::kDataLoaded:
-	{
-
-
-	}
-	break;
-
-
-	default:
-		break;
-
-	}
-}
-
 #define DLLEXPORT __declspec(dllexport)
 
 extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
 	{
 		SKSE::PluginVersionData v;
 		v.PluginName(Plugin::NAME);
-		v.AuthorName("SkyHorizon");
+		v.AuthorName("SkyHorizon"sv);
 		v.PluginVersion(Plugin::VERSION);
 		v.UsesAddressLibrary();
 		v.UsesNoStructs();
@@ -32,7 +13,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
 	}
 ();
 
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface*, SKSE::PluginInfo * pluginInfo)
+extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface*, SKSE::PluginInfo* pluginInfo)
 {
 	pluginInfo->name = SKSEPlugin_Version.pluginName;
 	pluginInfo->infoVersion = SKSE::PluginInfo::kVersion;
@@ -55,8 +36,6 @@ SKSEPluginLoad(const SKSE::LoadInterface* skse)
 #endif
 
 	SKSE::log::info("Game version: {}", skse->RuntimeVersion());
-
-	SKSE::GetMessagingInterface()->RegisterListener(MessageListener);
 
 	return true;
 }
