@@ -1,10 +1,9 @@
 {
   "name": "example",
   "version-string": "1.0.0",
-  "description": "CLib NG example plugin",
-  "license": "GPL-3.0",
+  "description": "Example CLib NG project",
   "dependencies": [
     "commonlibsse-ng"
   ],
-  "builtin-baseline": "8ce02b3d9a447071083436ad36f318dd19dd19ad"
+  "builtin-baseline": "14bb451131ccf6be50a63a8d9dfe7980e46b5958"
 }
