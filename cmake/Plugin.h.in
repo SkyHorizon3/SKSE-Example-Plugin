@@ -2,8 +2,6 @@
 
 namespace Plugin
 {
-	using namespace std::literals;
-
 	inline constexpr REL::Version VERSION
 	{
 		// clang-format off
