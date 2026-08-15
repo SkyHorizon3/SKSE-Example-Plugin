@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string_view>
-
 namespace Plugin
 {
 	using namespace std::literals;
@@ -15,5 +13,5 @@ namespace Plugin
 		// clang-format on
 	};
 
-	inline constexpr auto NAME = "@PROJECT_NAME@"sv;
+	inline constexpr const char* NAME = "@PROJECT_NAME@";
 }

@@ -7,7 +7,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
 	{
 		SKSE::PluginVersionData v;
 		v.PluginName(Plugin::NAME);
-		v.AuthorName("SkyHorizon"sv);
+		v.AuthorName("SkyHorizon");
 		v.PluginVersion(Plugin::VERSION);
 		v.UsesAddressLibrary();
 		v.UsesUpdatedStructs();
@@ -18,7 +18,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
 #else
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* skse, SKSE::PluginInfo* info)
 {
-	info->name = Plugin::NAME.data(); // TODO: check
+	info->name = Plugin::NAME;
 	info->infoVersion = SKSE::PluginInfo::kVersion;
 	info->version = Plugin::VERSION.pack();
 
