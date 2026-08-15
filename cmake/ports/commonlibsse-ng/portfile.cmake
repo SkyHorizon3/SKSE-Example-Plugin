@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO alandtse/CommonLibVR
-    REF d36bc08cae5d445804d4c22ccd49fec4e9dfbdc4
-    SHA512 4330d261dc7b60336f832b37bfbf286dc8f4d7616f41ccf6447efca18d6ca2b8ccb9e30fd455a52fa6d32cc3c717ba0311862adc4b2c69abdf17e81546b468b0
+    REF 48d71a9115d883078e5310cbf7643336a0688380
+    SHA512 fb7061f465073ed4cfcf0d8857ca42bbd24ea8ea8be0fc601b7b24c60272c1f6b9a9d68b4eb3b4f4c56cb6c6229041e797fcd41fd74639c00830833ceee92c45
     HEAD_REF ng
 )
 
@@ -14,29 +14,27 @@ vcpkg_from_github(
     HEAD_REF master
 )
 
-file(GLOB OPENVR_FILES "${SOURCE_PATH2}/*")
+file(COPY "${SOURCE_PATH2}/" DESTINATION "${SOURCE_PATH}/extern/openvr")
 
-file(COPY ${OPENVR_FILES} DESTINATION "${SOURCE_PATH}/extern/openvr")
-
-vcpkg_configure_cmake(
+vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
-    PREFER_NINJA
-    OPTIONS -DBUILD_TESTS=off -DSKSE_SUPPORT_XBYAK=on
+    OPTIONS
+        -DBUILD_TESTS=OFF 
+        -DSKSE_SUPPORT_XBYAK=ON
+        -DSKSE_SUPPORT_PATCH_SAFETY=OFF
 )
 
-vcpkg_install_cmake()
-vcpkg_cmake_config_fixup(PACKAGE_NAME CommonLibSSE CONFIG_PATH lib/cmake)
+vcpkg_cmake_install()
 vcpkg_copy_pdbs()
 
+vcpkg_cmake_config_fixup(CONFIG_PATH "lib/cmake/CommonLibSSE")
+
+file(INSTALL "${SOURCE_PATH}/cmake/CommonLibSSE.cmake" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 file(INSTALL "${SOURCE_PATH2}/headers/openvr.h" DESTINATION ${CURRENT_PACKAGES_DIR}/include)
-file(GLOB CMAKE_CONFIGS "${CURRENT_PACKAGES_DIR}/share/CommonLibSSE/CommonLibSSE/*.cmake")
-file(INSTALL ${CMAKE_CONFIGS} DESTINATION "${CURRENT_PACKAGES_DIR}/share/CommonLibSSE")
-file(INSTALL "${SOURCE_PATH}/cmake/CommonLibSSE.cmake" DESTINATION "${CURRENT_PACKAGES_DIR}/share/CommonLibSSE")
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
-file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/share/CommonLibSSE/CommonLibSSE")
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 
-file(
-    INSTALL "${SOURCE_PATH}/LICENSE"
-    DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
-    RENAME copyright)
+if(EXISTS "${SOURCE_PATH}/COPYING") # COPYING = new LICENSE
+    vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
+endif() 
