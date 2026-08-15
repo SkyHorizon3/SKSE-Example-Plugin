@@ -1,9 +1,15 @@
 cmake_minimum_required(VERSION 3.21)
 project(example VERSION 1.0.0 LANGUAGES CXX)
 
+option(BUILD_SKYRIMAE "Build for Skyrim AE" OFF)
+
 # Set your project version and specify C++ standard
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(BUILD_SKYRIMAE)
+	add_compile_definitions(SKYRIM_SUPPORT_AE)
+endif()
 
 # Include SKSEPlugin.cmake from the same directory
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")

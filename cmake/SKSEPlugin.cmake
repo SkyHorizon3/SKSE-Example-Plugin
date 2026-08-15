@@ -63,7 +63,6 @@ endif()
 
 # Find required packages
 find_package(CommonLibSSE CONFIG REQUIRED)
-find_package(DirectXTK CONFIG REQUIRED)
 
 # Include directories and libraries
 target_include_directories("${PROJECT_NAME}" PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

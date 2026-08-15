@@ -14,16 +14,9 @@
     {
       "name": "vcpkg",
       "hidden": true,
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": {
-          "type": "STRING",
-          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-        },
-        "VCPKG_OVERLAY_PORTS": {
-          "type": "STRING",
-          "value": "${sourceDir}/cmake/ports/"
-        },
-        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md",
+        "VCPKG_OVERLAY_PORTS": "${sourceDir}/cmake/ports/",
         "VCPKG_FEATURE_FLAGS": "-binarycaching"
       }
     },
@@ -32,7 +25,8 @@
       "hidden": true,
       "architecture": "x64",
       "cacheVariables": {
-        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md"
       }
     },
     {
@@ -56,10 +50,7 @@
     {
       "name": "AE",
       "cacheVariables": {
-        "BUILD_SKYRIM": true,
-        "ENABLE_SKYRIM_AE": "ON",
-        "ENABLE_SKYRIM_SE": "OFF",
-        "ENABLE_SKYRIM_VR": "OFF"
+        "BUILD_SKYRIMAE": "ON"
       },
       "inherits": [
         "common",
@@ -71,70 +62,7 @@
     {
       "name": "SE",
       "cacheVariables": {
-        "BUILD_SKYRIM": true,
-        "ENABLE_SKYRIM_AE": "OFF",
-        "ENABLE_SKYRIM_SE": "ON",
-        "ENABLE_SKYRIM_VR": "OFF"
-      },
-      "inherits": [
-        "common",
-        "vcpkg",
-        "win64",
-        "msvc"
-      ]
-    },
-    {
-      "name": "VR",
-      "cacheVariables": {
-        "BUILD_SKYRIM": true,
-        "ENABLE_SKYRIM_AE": "OFF",
-        "ENABLE_SKYRIM_SE": "OFF",
-        "ENABLE_SKYRIM_VR": "ON"
-      },
-      "inherits": [
-        "common",
-        "vcpkg",
-        "win64",
-        "msvc"
-      ]
-    },
-    {
-      "name": "ALL",
-      "cacheVariables": {
-        "BUILD_SKYRIM": true,
-        "ENABLE_SKYRIM_AE": "ON",
-        "ENABLE_SKYRIM_SE": "ON",
-        "ENABLE_SKYRIM_VR": "ON"
-      },
-      "inherits": [
-        "common",
-        "vcpkg",
-        "win64",
-        "msvc"
-      ]
-    },
-    {
-      "name": "PRE-AE",
-      "cacheVariables": {
-        "BUILD_SKYRIM": true,
-        "ENABLE_SKYRIM_AE": "OFF",
-        "ENABLE_SKYRIM_SE": "ON",
-        "ENABLE_SKYRIM_VR": "ON"
-      },
-      "inherits": [
-        "common",
-        "vcpkg",
-        "win64",
-        "msvc"
-      ]
-    },
-    {
-      "name": "FLATRIM",
-      "cacheVariables": {
-        "BUILD_SKYRIM": true,
-        "ENABLE_SKYRIM_AE": "ON",
-        "ENABLE_SKYRIM_SE": "ON",
-        "ENABLE_SKYRIM_VR": "OFF"
+        "BUILD_SKYRIMAE": "OFF"
       },
       "inherits": [
         "common",

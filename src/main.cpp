@@ -1,6 +1,8 @@
 ﻿
 #define DLLEXPORT __declspec(dllexport)
 
+
+#ifdef SKYRIM_SUPPORT_AE
 extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
 	{
 		SKSE::PluginVersionData v;
@@ -8,18 +10,35 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
 		v.AuthorName("SkyHorizon"sv);
 		v.PluginVersion(Plugin::VERSION);
 		v.UsesAddressLibrary();
-		v.UsesNoStructs();
+		v.UsesUpdatedStructs();
+		v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST });
 		return v;
 	}
 ();
-
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface*, SKSE::PluginInfo* pluginInfo)
+#else
+extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* skse, SKSE::PluginInfo* info)
 {
-	pluginInfo->name = SKSEPlugin_Version.pluginName;
-	pluginInfo->infoVersion = SKSE::PluginInfo::kVersion;
-	pluginInfo->version = SKSEPlugin_Version.pluginVersion;
+	info->name = Plugin::NAME.data(); // TODO: check
+	info->infoVersion = SKSE::PluginInfo::kVersion;
+	info->version = Plugin::VERSION.pack();
+
+	if (skse->IsEditor())
+	{
+		SKSE::log::critical("Loaded in editor, marking as incompatible"sv);
+		return false;
+	}
+
+	const auto ver = skse->RuntimeVersion();
+	if (ver < SKSE::RUNTIME_SSE_1_5_39)
+	{
+		const auto verStr = ver.string();
+		SKSE::log::critical("Unsupported runtime version {}", verStr);
+		return false;
+	}
+
 	return true;
 }
+#endif
 
 SKSEPluginLoad(const SKSE::LoadInterface* skse)
 {
