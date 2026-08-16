@@ -6,6 +6,7 @@
 using namespace std::literals;
 
 #include <xbyak/xbyak.h>
+#include <spdlog/sinks/basic_file_sink.h>
 #include "Plugin.h"
 
 
