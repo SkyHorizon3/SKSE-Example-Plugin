@@ -1,29 +1,34 @@
 #pragma once
 
+#ifdef DEBUG
+#undef DEBUG
+#endif
+
 #include "RE/Skyrim.h"
 #include "SKSE/SKSE.h"
-
-using namespace std::literals;
+#include "REX/REX.h"
 
 #include <xbyak/xbyak.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include "Plugin.h"
 
+using namespace std::literals;
+using namespace RE::literals;
 
 namespace stl
 {
-	using namespace SKSE::stl;
-
-	template <class T, size_t size = 5>
+	template <class T>
 	void write_thunk_call(std::uintptr_t a_src)
 	{
-		T::func = SKSE::GetTrampoline().write_call<size>(a_src, T::thunk);
+		auto& trampoline = REL::GetTrampoline();
+		T::func = trampoline.write_call<5>(a_src, T::thunk);
 	}
 
-	template <class T, size_t size = 5>
+	template <class T>
 	void write_thunk_jump(std::uintptr_t a_src)
 	{
-		T::func = SKSE::GetTrampoline().write_branch<size>(a_src, T::thunk);
+		auto& trampoline = REL::GetTrampoline();
+		T::func = trampoline.write_jmp<5>(a_src, T::thunk);
 	}
 
 	template <class T>
@@ -44,9 +49,10 @@ namespace stl
 				disp |= *reinterpret_cast<std::uint8_t*>(++bytes) << (i * 8);
 			}
 
-			SKSE::GetTrampoline().write_call<5>(writeAddress, T::thunk); // overwrite last 5 bytes of lea instruction
+			auto& trampoline = REL::GetTrampoline();
+			trampoline.write_call<5>(writeAddress, T::thunk); // overwrite last 5 bytes of lea instruction
 
-			REL::safe_write(writeAddress, operand1); // write back the operand which got modified by write_call
+			REL::WriteSafeData(writeAddress, operand1); // write back the operand which got modified by write_call
 
 			T::func = a_src + 7 + disp; // address + lea size + displacement
 		}
@@ -85,8 +91,8 @@ namespace stl
 		Patch p(a_src, BYTES);
 		p.ready();
 
-		auto& trampoline = SKSE::GetTrampoline();
-		trampoline.write_branch<5>(a_src, T::thunk);
+		auto& trampoline = REL::GetTrampoline();
+		trampoline.write_jmp<5>(a_src, T::thunk);
 
 		auto alloc = trampoline.allocate(p.getSize());
 		std::memcpy(alloc, p.getCode(), p.getSize());

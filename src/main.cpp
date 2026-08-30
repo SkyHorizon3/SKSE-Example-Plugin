@@ -14,49 +14,30 @@ void OnInit(SKSE::MessagingInterface::Message* a_msg)
 	}
 }
 
-void InitializeLog()
-{
-	auto path = SKSE::log::log_directory();
-	if (!path) {
-		stl::report_and_fail("Failed to find standard logging directory"sv);
-	}
-
-	*path /= std::format("{}.log", Plugin::NAME);
-	auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
-
-	auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
-
-#ifndef NDEBUG
-	log->set_level(spdlog::level::trace);
-	log->flush_on(spdlog::level::trace);
-#else
-	log->set_level(spdlog::level::info);
-	log->flush_on(spdlog::level::info);
-#endif
-
-	spdlog::set_default_logger(std::move(log));
-	spdlog::set_pattern("[%H:%M:%S:%e] [%l] %v"s);
-
-	SKSE::log::info("{} v{}", Plugin::NAME, Plugin::VERSION);
-}
-
-#define DLLEXPORT __declspec(dllexport)
-
 #ifdef SKYRIM_SUPPORT_AE
-extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
+SKSE_PLUGIN_VERSION = []() {
+	SKSE::PluginVersionData v;
+	v.PluginVersion(Plugin::VERSION);
+	v.PluginName(Plugin::NAME);
+	v.AuthorName("SkyHorizon");
+	v.UsesAddressLibrary();
+	v.UsesUpdatedStructs();
+	v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST });
+
+	if constexpr (SKSE::RUNTIME_SSE_LATEST < SKSE::RUNTIME_SSE_1_7_99)
 	{
-		SKSE::PluginVersionData v;
-		v.PluginName(Plugin::NAME);
-		v.AuthorName("SkyHorizon");
-		v.PluginVersion(Plugin::VERSION);
-		v.UsesAddressLibrary();
-		v.UsesUpdatedStructs();
-		v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST });
-		return v;
+		v.MinimumRequiredXSEVersion(REL::Version{ 2, 2, 5 });
 	}
-();
+	else
+	{
+		// address library v5 support
+		v.MinimumRequiredXSEVersion(REL::Version{ 2, 3, 0 });
+	}
+
+	return v;
+	}();
 #else
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* skse, SKSE::PluginInfo* info)
+SKSE_PLUGIN_QUERY(const SKSE::QueryInterface* skse, SKSE::PluginInfo* info)
 {
 	info->name = Plugin::NAME;
 	info->infoVersion = SKSE::PluginInfo::kVersion;
@@ -64,7 +45,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* s
 
 	if (skse->IsEditor())
 	{
-		SKSE::log::critical("Loaded in editor, marking as incompatible"sv);
+		REX::CRITICAL("Loaded in editor, marking as incompatible");
 		return false;
 	}
 
@@ -72,7 +53,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* s
 	if (ver < SKSE::RUNTIME_SSE_1_5_39)
 	{
 		const auto verStr = ver.string();
-		SKSE::log::critical("Unsupported runtime version {}", verStr);
+		REX::CRITICAL("Unsupported runtime version {}", verStr);
 		return false;
 	}
 
@@ -80,16 +61,39 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* s
 }
 #endif
 
-SKSEPluginLoad(const SKSE::LoadInterface* skse)
+SKSE_PLUGIN_LOAD(const SKSE::LoadInterface* skse)
 {
-	InitializeLog();
+	SKSE::Init(skse, SKSE::InitInfo{
+					   .log = true,
+					   .logName = Plugin::NAME,
+					   //.trampoline = true,
+					   // .trampolineSize = 100,
+		});
 
-	SKSE::Init(skse, false);
 
-	SKSE::log::info("Game version: {}", skse->RuntimeVersion());
+	const auto runtimeVer = skse->RuntimeVersion();
+	REX::INFO("Game version: {}", runtimeVer);
+
+
+#ifdef SKYRIM_SUPPORT_AE
+	if constexpr (SKSE::RUNTIME_SSE_LATEST < SKSE::RUNTIME_SSE_1_7_99)
+	{
+		if (runtimeVer >= SKSE::RUNTIME_SSE_1_7_99)
+		{
+			REX::FAIL(
+				"You are using a newer version of Skyrim than this version of {0} supports.\n"
+				"Install the correct version of {0} for your game version.\n"
+				"Runtime: {1}\n"
+				"Supported: 1.6.1170 (Steam) / 1.6.1179 (GOG)",
+				Plugin::NAME, runtimeVer);
+		}
+	}
+#endif
 
 	auto messaging = SKSE::GetMessagingInterface();
-	messaging->RegisterListener("SKSE", OnInit);
+	messaging->RegisterListener(OnInit);
+
+	REX::DEBUG("Hello!");
 
 	return true;
 }
