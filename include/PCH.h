@@ -13,16 +13,16 @@ namespace stl
 {
 	using namespace SKSE::stl;
 
-	template <class T, size_t size = 5>
+	template <class T>
 	void write_thunk_call(std::uintptr_t a_src)
 	{
-		T::func = SKSE::GetTrampoline().write_call<size>(a_src, T::thunk);
+		T::func = SKSE::GetTrampoline().write_call<5>(a_src, T::thunk);
 	}
 
-	template <class T, size_t size = 5>
+	template <class T>
 	void write_thunk_jump(std::uintptr_t a_src)
 	{
-		T::func = SKSE::GetTrampoline().write_branch<size>(a_src, T::thunk);
+		T::func = SKSE::GetTrampoline().write_branch<5>(a_src, T::thunk);
 	}
 
 	template <class T>
@@ -68,6 +68,12 @@ namespace stl
 	template <class T, std::size_t BYTES>
 	void hook_function_prologue(std::uintptr_t a_src)
 	{
+		auto& trampoline = SKSE::GetTrampoline();
+		if (*reinterpret_cast<std::uint8_t*>(a_src) == 0xE9) {
+			T::func = trampoline.write_branch<5>(a_src, T::thunk);
+			return;
+		}
+
 		struct Patch : Xbyak::CodeGenerator
 		{
 			Patch(std::uintptr_t a_originalFuncAddr, std::size_t a_originalByteLength)
@@ -84,7 +90,6 @@ namespace stl
 		Patch p(a_src, BYTES);
 		p.ready();
 
-		auto& trampoline = SKSE::GetTrampoline();
 		trampoline.write_branch<5>(a_src, T::thunk);
 
 		auto alloc = trampoline.allocate(p.getSize());
